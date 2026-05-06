@@ -399,6 +399,14 @@ class AgentLoop:
             self.tools.register(
                 CronTool(self.cron_service, default_timezone=self.context.timezone or "UTC")
             )
+        # Register market data tools (akshare-based)
+        try:
+            from nanobot.agent.tools.market import StockPriceTool, CryptoPriceTool
+            self.tools.register(StockPriceTool())
+            self.tools.register(CryptoPriceTool())
+            logger.info("Market data tools (akshare) registered successfully")
+        except ImportError as e:
+            logger.debug("Market data tools not available: {}", e)
 
     async def _connect_mcp(self) -> None:
         """Connect to configured MCP servers (one-time, lazy)."""
